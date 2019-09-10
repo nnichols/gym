@@ -8,7 +8,7 @@
    2 "Convert URL links to the form https://www.brewersfriend.com/homebrew/recipe/downloadbeerxml/5920"
    3 "Download beerXML and parse to brew-bot format"
    4 "Make brew-bot BeerXML compliant"
-   5 "Update brew-bot to generate by styles using the above data"}) +
+   5 "Update brew-bot to generate by styles using the above data"})
 
 (defn keywordize
   [s]
@@ -127,13 +127,14 @@
   (let [acc-map {:fermentables {} :hops {} :yeasts {} :extras {}}
         acc-fn (fn [acc next]
                  (if next
-                   (hash-map {:fermentables (merge-with + (:fermentables acc) (:fermentables next))
+                   (hash-map :fermentables (merge-with + (:fermentables acc) (:fermentables next))
                               :hops         (merge-with + (:hops acc) (:hops next))
                               :yeasts       (merge-with + (:yeasts acc) (:yeasts next))
-                              :extras       (merge-with + (:extras acc) (:extras next))})
+                              :extras       (merge-with + (:extras acc) (:extras next)))
                     acc))]
     (reduce acc-fn acc-map recipe-list)))
 
 (defn try-me!
   []
-  (fetch-convert-normalize! "https://www.brewersfriend.com/homebrew/recipe/beerxml1.0/29265"))
+  (aggregate-recipes [(fetch-convert-normalize! "https://www.brewersfriend.com/homebrew/recipe/beerxml1.0/29265")
+                      (fetch-convert-normalize! "https://www.brewersfriend.com/homebrew/recipe/beerxml1.0/401540")]))
