@@ -1,6 +1,6 @@
 (ns gym.beer-xml.scrape
   (:require [clj-http.client :as http]
-            [clojure.data.xml :as xml]))
+            [clojure.data.xml :as xml])) ;; XML is truly the worst
 
 (def todo
   {1 "Download recipe listingh @ https://www.kaggle.com/jtrofe/beer-recipes"
@@ -30,9 +30,9 @@
   "Parses s to a double. Returns nil on failure."
   [s]
   (cond
-   (nil? s)    nil
-   (double? s) s
-   (string? s) (try-or-nil #(Double/parseDouble %) s)))
+    (nil? s)    nil
+    (double? s) s
+    (string? s) (try-or-nil #(Double/parseDouble %) s)))
 
 (defn try-kg->lb
   [w]
@@ -52,45 +52,54 @@
   [tag xml]
   (:content (first (filter #(= (:tag %) tag) xml))))
 
+(defn value-at-tag
+  [tag xml]
+  (first (extract-tag tag (:content xml))))
+
 (defn fermentables-xml->map
   [fermentables]
-  (map #(hash-map :name   (first (extract-tag :NAME (:content %))) ;; XML is the worst
-                  :weight (try-kg->lb (first (extract-tag :AMOUNT (:content %))))) fermentables))
+  (map #(hash-map :name   (value-at-tag :NAME %)
+                  :weight (try-kg->lb (value-at-tag :AMOUNT %))) fermentables))
 
 (defn hops-xml->map
   [hops]
-  (map #(hash-map :name   (first (extract-tag :NAME (:content %)))
-                  :weight (try-kg->oz (first (extract-tag :AMOUNT (:content %))))
-                  :time   (first (extract-tag :NAME (:content %)))) hops))
+  (map #(hash-map :name   (value-at-tag :NAME %)
+                  :weight (try-kg->oz (value-at-tag :AMOUNT %))
+                  :time   (value-at-tag :NAME %)) hops))
 
 (defn yeasts-xml->map
   [yeasts]
-  (map #(hash-map :name       (first (extract-tag :NAME (:content %)))
-                  :laboratory (first (extract-tag :LABORATORY (:content %)))) yeasts))
+  (map #(hash-map :name       (value-at-tag :NAME %)
+                  :laboratory (value-at-tag :LABORATORY %)) yeasts))
 
 (defn style-xml->map
   [style]
-  (hash-map :name     (first (extract-tag :NAME style))
-            :category (first (extract-tag :CATEGORY style))
-            :type     (first (extract-tag :TYPE style))))
+  (hash-map :name     (value-at-tag :NAME style)
+            :category (value-at-tag :CATEGORY style)
+            :type     (value-at-tag :TYPE style)))
 
 (defn extras-xml->map
   [extras]
   (when extras
-    (map #(hash-map :name   (first (extract-tag :NAME (:content %)))
-                    :use    (first (extract-tag :USE (:content %)))
-                    :time   (first (extract-tag :TIME (:content %)))
-                    :amount (try-kg->lb (first (extract-tag :AMOUNT (:content %))))) extras)))
+    (map #(hash-map :name   (value-at-tag :NAME %)
+                    :use    (value-at-tag :USE %)
+                    :time   (value-at-tag :TIME %)
+                    :amount (try-kg->lb (value-at-tag :AMOUNT %))) extras)))
 
-(defn try-me!
-  []
-  (let [recipe (-> (http/get "https://www.brewersfriend.com/homebrew/recipe/beerxml1.0/29265")
-                   :body
-                   xml/parse-str
-                   :content
-                   first
-                   :content)
-        batch-size   (first (extract-tag :DISPLAY_BATCH_SIZE recipe))
+(defn fetch-recipe
+  [url]
+  (let [page (http/get url)]
+    (when (= 200 (:status page))
+      (-> page
+          :body
+          xml/parse-str
+          :content
+          first
+          :content))))
+
+(defn recipe->edn
+  [recipe]
+  (let [batch-size   (first (extract-tag :DISPLAY_BATCH_SIZE recipe))
         fermentables (fermentables-xml->map (extract-tag :FERMENTABLES recipe))
         hops         (hops-xml->map (extract-tag :HOPS recipe))
         yeasts       (yeasts-xml->map (extract-tag :YEASTS recipe))
@@ -102,3 +111,8 @@
      :yeasts       yeasts
      :style        style
      :extras       extras}))
+
+(defn try-me!
+  []
+  (let [recipe (fetch-recipe "https://www.brewersfriend.com/homebrew/recipe/beerxml1.0/29265")]
+    (recipe->edn recipe)))
