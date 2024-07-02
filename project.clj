@@ -8,4 +8,4 @@
                  [clj-http "3.13.0"]
                  [com.wallbrew/brew-bot "3.2.1"]
                  [dj-marky-markov "0.0.3"]
-                 [metosin/spec-tools "0.10.6"]])
+                 [metosin/spec-tools "0.10.7"]])
