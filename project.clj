@@ -3,7 +3,7 @@
   :url "https://github.com/nnichols/gym"
   :license {:name "MIT"
             :url  "https://opensource.org/licenses/MIT"}
-  :dependencies [[org.clojure/clojure "1.11.4"]
+  :dependencies [[org.clojure/clojure "1.12.0"]
                  [cheshire "5.13.0"]
                  [clj-http "3.13.0"]
                  [com.wallbrew/brew-bot "3.2.1"]
