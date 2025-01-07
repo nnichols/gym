@@ -1,4 +1,4 @@
-(ns gym.core
+(ns gym.clipboard
   "Functions to interact with the system clipboard.
    Like `pbcopy` and `pbpaste`, but for the repl"
   (:import [java.awt.datatransfer DataFlavor StringSelection]))
