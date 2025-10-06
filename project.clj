@@ -9,6 +9,6 @@
                  [criterium/criterium "0.4.6"]
                  [com.wallbrew/brew-bot "3.5.0"]
                  [dj-marky-markov "0.0.3"]
-                 [metosin/malli "0.19.1"]
+                 [metosin/malli "0.19.2"]
                  [metosin/spec-tools "0.10.7"]]
   :aliases {"benchmark-malli" ["run" "-m" "gym.benchmarking.malli/run-malli-benchmarks!"]})
