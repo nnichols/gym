@@ -4,7 +4,7 @@
   :license {:name "MIT"
             :url  "https://opensource.org/licenses/MIT"}
   :dependencies [[org.clojure/clojure "1.12.3"]
-                 [cheshire "6.0.0"]
+                 [cheshire "6.1.0"]
                  [clj-http "3.13.1"]
                  [criterium/criterium "0.4.6"]
                  [com.wallbrew/brew-bot "3.5.0"]
