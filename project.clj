@@ -10,5 +10,5 @@
                  [com.wallbrew/brew-bot "3.5.0"]
                  [dj-marky-markov "0.0.3"]
                  [metosin/malli "0.20.0"]
-                 [metosin/spec-tools "0.10.7"]]
+                 [metosin/spec-tools "0.10.8"]]
   :aliases {"benchmark-malli" ["run" "-m" "gym.benchmarking.malli/run-malli-benchmarks!"]})
